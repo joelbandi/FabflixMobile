@@ -40,7 +40,7 @@ public class SearchActivity extends AppCompatActivity {
 
             @Override
             public boolean onQueryTextChange(String newText) {
-
+                test.append(newText);
 
                 return false;
             }
