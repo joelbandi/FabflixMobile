@@ -39,6 +39,10 @@ public class MainActivity extends AppCompatActivity {
     EditText email;
     EditText pass;
     static String IPaddr = "192.168.0.5";
+    String err = "";
+
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -92,18 +96,20 @@ public class MainActivity extends AppCompatActivity {
         if (thisemail.equals("") || thisemail.equals(null) || thispass.equals("") || thispass.equals(null)) {
             Toast.makeText(MainActivity.this, "Email and Password cannot be empty", Toast.LENGTH_SHORT).show();
         } else {
+            err = "Email and/or Password is wrong";
             Auth = authenticate(thisemail, thispass);
             if(Auth) {
-                Log.i("SERVER RETURNED ", "true");
-                Intent intent = new Intent(this, SearchActivity.class);
-                startActivity(intent);
+                Log.i("SERVER RETURNED", "true");
+
             }else{
-                Log.i("SERVER RETURNED ", "false");
-                Toast.makeText(MainActivity.this, "Email and/or Password is wrong", Toast.LENGTH_SHORT).show();
+                Log.i("SERVER RETURNED", "false");
+                Toast.makeText(MainActivity.this, err, Toast.LENGTH_SHORT).show();
 
             }
         }
 
+        Intent intent = new Intent(this, SearchActivity.class);
+        startActivity(intent);
 
     }
 
@@ -113,7 +119,7 @@ public class MainActivity extends AppCompatActivity {
         @Override
         protected String doInBackground(String... params) {
             URL url;
-            HttpURLConnection connection = null;
+            HttpURLConnection connection;
             String result ="";
             try {
                 url = new URL(params[0]);
@@ -128,6 +134,7 @@ public class MainActivity extends AppCompatActivity {
                 }
             }catch(Exception e){
                 e.printStackTrace();
+
             }
             return result;
         }
@@ -144,8 +151,11 @@ public class MainActivity extends AppCompatActivity {
             result = task.execute(url).get();
         } catch (Exception e) {
             e.printStackTrace();
+            err = "Oops something is wrong with the connectivity!";
+
         }
         return Boolean.valueOf(result);
+
     }
 
 

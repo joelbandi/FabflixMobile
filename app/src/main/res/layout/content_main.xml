@@ -56,7 +56,7 @@
         android:layout_below="@+id/pass"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="31dp"
-        android:elevation="10dp"
+        android:elevation="35dp"
         android:background="#ffffff"
         android:onClick="onLoginClick" />
 </RelativeLayout>
