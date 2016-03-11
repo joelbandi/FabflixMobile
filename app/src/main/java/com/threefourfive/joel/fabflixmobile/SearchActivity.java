@@ -1,9 +1,13 @@
 package com.threefourfive.joel.fabflixmobile;
 
+import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
+import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.SearchView;
@@ -14,8 +18,10 @@ import org.json.JSONException;
 
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 
 public class SearchActivity extends AppCompatActivity {
@@ -24,7 +30,6 @@ public class SearchActivity extends AppCompatActivity {
     ListView movielist;
     ArrayList<String> moviearray;
     ArrayAdapter<String> adapter;
-
 
 
 
@@ -49,8 +54,24 @@ public class SearchActivity extends AppCompatActivity {
 
             @Override
             public boolean onQueryTextSubmit(String query) {
-                Toast.makeText(SearchActivity.this, query, Toast.LENGTH_SHORT).show();
-                search(query);
+
+                String result = search(query);
+                try {
+                    JSONArray arr = new JSONArray(result);
+                    moviearray.clear();
+                    for(int i=0; i<arr.length();i++){
+                        moviearray.add(arr.getString(i));
+                    }
+
+                    movielist.setAdapter(adapter);
+
+
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                    Toast.makeText(getApplicationContext(),result,Toast.LENGTH_SHORT).show();
+                }
+
+
                 movielist.setAdapter(adapter);
                 return false;
             }
@@ -58,10 +79,33 @@ public class SearchActivity extends AppCompatActivity {
 
             @Override
             public boolean onQueryTextChange(String newText) {
-
                 return false;
             }
         });
+
+
+
+        //define a new listener/ logic to handle movie list individual clicks
+
+
+        movielist.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                //Toast.makeText(getApplicationContext(),moviearray.get(position),Toast.LENGTH_SHORT).show();
+                String name = moviearray.get(position);
+                Intent intent  = new Intent(getApplicationContext(), MovieActivity.class);
+                intent.putExtra("name",name);
+                startActivity(intent);
+            }
+        });
+
+
+
+
+
+
+
+
 
 
     }
@@ -72,7 +116,7 @@ public class SearchActivity extends AppCompatActivity {
         @Override
         protected String doInBackground(String... params) {
             String result="";
-            URL url = null;
+            URL url;
             HttpURLConnection connection;
             try {
                 url = new URL(params[0]);
@@ -91,38 +135,38 @@ public class SearchActivity extends AppCompatActivity {
             }
 
 
-            return null;
+            return "Error while fetching results";
         }
 
-        @Override
-        protected void onPostExecute(String result) {
-            super.onPostExecute(result);
-
-            try {
-                JSONArray arr = new JSONArray(result);
-
-                for(int i =0; i<arr.length();i++){
-                    String movie = arr.getString(i);
-                    moviearray.add(movie);
-                }
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-        }
 
     }
 
-
-    public void search(String query){
+    public String search(String query){
         MovieDownloadUpdateTask task = new MovieDownloadUpdateTask();
         String IPaddr = "52.36.253.151";
+//        String IPaddr = "192.168.0.5";
         String url = "http://"+IPaddr+":8080/fabflix/typeahead?typeahead="+query;
+        url = url.trim();
+        url = url.replaceAll("\\s+", "%20");
+
+
+//        String url = "http://www.joelbandi.me/";
+        Log.i("URL",url);
         try {
-            String received = task.execute(url).get();
+            String result = task.execute(url).get();
+            if(result.equals("Error while fetching results")){
+                Toast.makeText(this,"Error while fetching. Please check connectivity",Toast.LENGTH_SHORT).show();
+                return "Error while fetching. Please check connectivity";
+            }
+            Log.i("JSON ",result);
+            return result;
         } catch (Exception e) {
             e.printStackTrace();
+            Toast.makeText(this,"Error while searching. Please check connectivity",Toast.LENGTH_SHORT).show();
+            return "Error while searching. Please check connectivity ";
         }
     }
+    /*--------------------------------------------------------*/
 
 
 
