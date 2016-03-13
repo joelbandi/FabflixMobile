@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:fitsSystemWindows="true"
-    tools:context="com.threefourfive.joel.fabflixmobile.MovieActivity">
+    tools:context="com.threefourfive.joel.fabflixmobile.StarActivity">
 
     <android.support.design.widget.AppBarLayout
         android:layout_width="match_parent"
@@ -30,11 +30,8 @@
         android:paddingLeft="@dimen/activity_horizontal_margin"
         android:paddingRight="@dimen/activity_horizontal_margin"
         android:paddingTop="@dimen/activity_vertical_margin"
-        app:layout_behavior="@string/appbar_scrolling_view_behavior"
-        android:elevation="15dp"
-        android:focusable="false"
-        android:gravity="top"
-        android:scrollIndicators="right">
+        app:layout_behavior="@string/appbar_scrolling_view_behavior">
+
 
         <ScrollView
             android:layout_width="fill_parent"
@@ -86,8 +83,8 @@
                     <TextView
                         android:layout_width="fill_parent"
                         android:layout_height="wrap_content"
-                        android:text="Title : "
-                        android:id="@+id/title"
+                        android:text="First Name : "
+                        android:id="@+id/first_name"
                         android:textSize="30dp"
                         android:textIsSelectable="true"
                         android:textColor="#000000"
@@ -96,8 +93,8 @@
                     <TextView
                         android:layout_width="fill_parent"
                         android:layout_height="wrap_content"
-                        android:text="Director : "
-                        android:id="@+id/director"
+                        android:text="Last Name :"
+                        android:id="@+id/last_name"
                         android:textSize="30dp"
                         android:textIsSelectable="true"
                         android:textColor="#000000"
@@ -106,8 +103,8 @@
                     <TextView
                         android:layout_width="fill_parent"
                         android:layout_height="wrap_content"
-                        android:text="Year :"
-                        android:id="@+id/year"
+                        android:text="D.O.B :"
+                        android:id="@+id/dob"
                         android:textSize="30sp"
                         android:textIsSelectable="true"
                         android:textColor="#000000"
@@ -126,13 +123,13 @@
                     android:background="#ffffff"
                     android:elevation="7dp"
                     android:layout_marginTop="15dp"
-                    android:id="@+id/starsection">
+                    android:id="@+id/moviesection">
 
                     <TextView
                         android:layout_width="fill_parent"
                         android:layout_height="wrap_content"
-                        android:text="Stars:"
-                        android:id="@+id/stars"
+                        android:text="Movies:"
+                        android:id="@+id/movies"
                         android:textSize="30dp"
                         android:textIsSelectable="true"
                         android:textColor="#000000"
@@ -142,10 +139,9 @@
                     <ListView
                         android:layout_width="fill_parent"
                         android:layout_height="110dp"
-                        android:id="@+id/starlist"
+                        android:id="@+id/movielist"
                         android:nestedScrollingEnabled="true"
-                        android:scrollIndicators="right"
-                        android:foregroundTint="#000000" />
+                        android:scrollIndicators="right" />
 
                 </LinearLayout>
 
@@ -154,7 +150,6 @@
         </ScrollView>
 
     </RelativeLayout>
-
 
 
 

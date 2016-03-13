@@ -9,6 +9,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.ListView;
 import android.widget.SearchView;
 import android.widget.Toast;
@@ -30,8 +31,10 @@ public class SearchActivity extends AppCompatActivity {
     ListView movielist;
     ArrayList<String> moviearray;
     ArrayAdapter<String> adapter;
-
-
+    Button loadmore;
+    String searchterm;
+    String a = "0";
+    String b = "10";
 
 
     @Override
@@ -46,15 +49,17 @@ public class SearchActivity extends AppCompatActivity {
         movielist = (ListView)findViewById(R.id.movielist);
         moviearray = new ArrayList<String>();
         adapter = new ArrayAdapter<String>(this,android.R.layout.simple_list_item_1, moviearray);
-
-
+        loadmore = (Button)findViewById(R.id.loadmore);
+        loadmore.setVisibility(View.GONE);
         //define and create a listener of the event
         searchbar.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
 
 
             @Override
             public boolean onQueryTextSubmit(String query) {
-
+                a = "0";
+                b = "10";
+                searchterm = query;
                 String result = search(query);
                 try {
                     JSONArray arr = new JSONArray(result);
@@ -64,6 +69,7 @@ public class SearchActivity extends AppCompatActivity {
                     }
 
                     movielist.setAdapter(adapter);
+                    loadmore.setVisibility(View.VISIBLE);
 
 
                 } catch (JSONException e) {
@@ -92,9 +98,9 @@ public class SearchActivity extends AppCompatActivity {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 //Toast.makeText(getApplicationContext(),moviearray.get(position),Toast.LENGTH_SHORT).show();
-                String name = moviearray.get(position);
+                String movie = moviearray.get(position);
                 Intent intent  = new Intent(getApplicationContext(), MovieActivity.class);
-                intent.putExtra("name",name);
+                intent.putExtra("movie",movie);
                 startActivity(intent);
             }
         });
@@ -145,7 +151,7 @@ public class SearchActivity extends AppCompatActivity {
         MovieDownloadUpdateTask task = new MovieDownloadUpdateTask();
         String IPaddr = "52.36.253.151";
 //        String IPaddr = "192.168.0.5";
-        String url = "http://"+IPaddr+":8080/fabflix/typeahead?typeahead="+query;
+        String url = "http://"+IPaddr+":8080/fabflix/typeahead?typeahead="+query+"&a="+a+"&b="+b;
         url = url.trim();
         url = url.replaceAll("\\s+", "%20");
 
@@ -169,7 +175,37 @@ public class SearchActivity extends AppCompatActivity {
     /*--------------------------------------------------------*/
 
 
+    public void loadMore(View view){
+        int aa = Integer.parseInt(a);
+        aa = aa + 10;
+        a = String.valueOf(aa);
+        int bb = Integer.parseInt(b);
+        bb = bb + 10;
+        b = String.valueOf(bb);
+        view.setVisibility(View.GONE);
+        String result = search(searchterm);
+        try {
+            JSONArray arr = new JSONArray(result);
+            if(arr.length()==0){
+                return;
+            }
+            for(int i=0; i<arr.length();i++){
+                moviearray.add(arr.getString(i));
+            }
 
+            movielist.setAdapter(adapter);
+
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+            Toast.makeText(getApplicationContext(),"No more results",Toast.LENGTH_SHORT).show();
+
+        }
+
+        view.setVisibility(View.VISIBLE);
+
+        movielist.setAdapter(adapter);
+    }
 
 
 

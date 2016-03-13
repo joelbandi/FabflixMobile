@@ -11,7 +11,6 @@ import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -27,64 +26,62 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
 
-public class MovieActivity extends AppCompatActivity {
-
-    //define view names and vars
-    TextView title;
-    TextView director;
-    TextView year;
-    ListView starlist;
-    LinearLayout starsection;
-    ArrayList<String> stararray;
+public class StarActivity extends AppCompatActivity {
+    //var and view defintitions
+    TextView first_name;
+    TextView last_name;
+    TextView dob;
+    LinearLayout moviesection;
+    ListView movielist;
+    ArrayList<String> moviearray;
     ArrayAdapter<String> adapter;
+
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_movie);
+        setContentView(R.layout.activity_star);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-
-        //instantiate required views and vars
-        title = (TextView) findViewById(R.id.title);
-        director = (TextView) findViewById(R.id.director);
-        year = (TextView) findViewById(R.id.year);
-        starlist = (ListView) findViewById(R.id.starlist);
-        starsection = (LinearLayout)findViewById(R.id.starsection);
-        starsection.setVisibility(View.GONE);
-        stararray = new ArrayList<String>();
-        adapter  = new ArrayAdapter<String>(this,android.R.layout.simple_list_item_1,stararray);
-
-
-
+        //get intent message as well
         Bundle bundle = getIntent().getExtras();
-        String movie = bundle.getString("movie");
-        Log.i("intent received",movie);
+        String star = bundle.getString("star");
+        Log.i("Intent received",star);
+
+        //view and var instanstiation
+        first_name = (TextView)findViewById(R.id.first_name);
+        last_name = (TextView)findViewById(R.id.last_name);
+        dob = (TextView)findViewById(R.id.dob);
+        moviesection = (LinearLayout)findViewById(R.id.moviesection);
+        moviesection.setVisibility(View.GONE);
+        movielist = (ListView)findViewById(R.id.movielist);
+        moviearray = new ArrayList<String>();
+        adapter  = new ArrayAdapter<String>(this,android.R.layout.simple_list_item_1,moviearray);
 
 
-        //uncomment this...
-        //String result = setView(movie);
+        //String result = setView(star);
+        String result = "{\"movies\":[\"In Good Company\",\"Love Actually\"],\"dob\":\"1954-04-09\",\"last_name\":\"Quaid\",\"photo\":\"http://movies.yahoo.com/shop?d=hc&id=1800015473&cf=pg&photoid=552364&intl=us\",\"id\":\"48007\",\"first_name\":\"Dennis\"}";
         try {
-            String result="{\"trailer\":\"http://a2016.g.akamai.net/5/2016/51/cc0fd4ba52ea34/1a1a1aaa2198c627970773d80669d84574a8d80d3cb12453c02589f25382f668c9329e0375e8178cff608f0375d63ca20b6e/traffic_480.mov\",\"starnames\":[\"Michael Douglas\",\"Benicio Del Toro\",\"Catherine Zeta-Jones\"],\"year\":\"2000\",\"director\":\"Steven Soderbergh\",\"banner\":\"http://images.amazon.com/images/P/B000067IZ3.01.LZZZZZZZ.jpg\",\"id\":\"490011\",\"title\":\"Traffic\",\"genrenames\":[]}";
-            JSONObject obj = new JSONObject(result);
-            title.append(obj.getString("title"));
-            year.append(obj.getString("year"));
-            director.append(obj.getString("director"));
 
-            JSONArray arr = new JSONArray(obj.getString("starnames"));
+            JSONObject obj = new JSONObject(result);
+            first_name.append(obj.getString("first_name"));
+            last_name.append(obj.getString("last_name"));
+            dob.append(obj.getString("dob"));
+
+            JSONArray arr = new JSONArray(obj.getString("movies"));
             Log.i("ARRAY",arr.toString());
             if(arr.length()!=0){
-                starsection.setVisibility(View.VISIBLE);
-                stararray.clear();
+                moviesection.setVisibility(View.VISIBLE);
+                moviearray.clear();
                 for(int i=0; i<arr.length();i++){
-                    stararray.add(i, arr.getString(i));
+                    moviearray.add(i, arr.getString(i));
                     Log.i("added",arr.getString(i));
                 }
 
             }
-            starlist.setAdapter(adapter);
+            movielist.setAdapter(adapter);
 
 
         } catch (JSONException e) {
@@ -94,21 +91,20 @@ public class MovieActivity extends AppCompatActivity {
 
 
 
-        starlist.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+        movielist.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                Intent intent = new Intent(getApplicationContext(),StarActivity.class);
-                intent.putExtra("star",stararray.get(position));
+                Intent intent = new Intent(getApplicationContext(),MovieActivity.class);
+                intent.putExtra("movie",moviearray.get(position));
                 startActivity(intent);
             }
         });
 
-
-
-
     }
 
-    class DownloadMovieTask extends AsyncTask<String, Void, String> {
+
+
+    class DownloadStarTask extends AsyncTask<String, Void, String> {
 
         @Override
         protected String doInBackground(String... params) {
@@ -139,11 +135,11 @@ public class MovieActivity extends AppCompatActivity {
     }
 
 
-    public String setView(String movie) {
-        DownloadMovieTask task = new DownloadMovieTask();
+    public String setView(String star) {
+        DownloadStarTask task = new DownloadStarTask();
         String IPaddr = "52.36.253.151";
 //        String IPaddr = "192.168.0.5";
-        String url = "http://" + IPaddr + ":8080/fabflix/api/movie?movie=" + movie;
+        String url = "http://" + IPaddr + ":8080/fabflix/api/star?star=" + star;
         url = url.trim();
         url = url.replaceAll("\\s+", "%20");
 
@@ -163,7 +159,5 @@ public class MovieActivity extends AppCompatActivity {
             return "Error while searching. Please check connectivity ";
         }
     }
+
 }
-
-
-
